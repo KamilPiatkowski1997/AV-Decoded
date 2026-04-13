@@ -1,8 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
 import { ai } from '../lib/gemini';
-import { MessageSquare, X, Send, Bot } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, Calendar } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
+import { Type, FunctionDeclaration } from '@google/genai';
+
+const bookAppointmentDeclaration: FunctionDeclaration = {
+  name: "book_appointment",
+  description: "Books a discovery call for the user after collecting their details.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      name: { type: Type.STRING, description: "The user's full name" },
+      email: { type: Type.STRING, description: "The user's email address" },
+      phone: { type: Type.STRING, description: "The user's phone number" },
+      requested_slot: { type: Type.STRING, description: "The date and time the user wants to book (e.g., 'Tuesday at 2pm')" }
+    },
+    required: ["name", "email", "phone", "requested_slot"]
+  }
+};
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,16 +52,59 @@ export default function Chatbot() {
       }));
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
+        model: 'gemini-3-flash-preview',
         contents: [
           ...history,
           { role: 'user', parts: [{ text: userText }] }
         ],
         config: {
-          systemInstruction: "You are a helpful AI receptionist for AV Decoded, an AI automation agency. Keep responses concise, professional, and helpful. If a user is interested in booking a call or asks how to get started, always direct them to book using this exact markdown link: [Book your free 30-minute call](https://calendar.google.com/calendar/appointments/schedules/AcZssZ02790FCOT24-Uwu561D4vTakg9rM2b4_ganlYzNeB5RTNPVJVh7mRZ9VktgwAR5pRrYUcUTUNp?gv=true) — always use this markdown format, never paste the raw URL."        }
+          systemInstruction: `You are the AV Decoded AI Sales Specialist. Your primary goal is to convert visitors into leads and book discovery calls. 
+
+Key Directives:
+1. Be extremely proactive and sales-oriented. Every interaction should move towards booking a call.
+2. IMMEDIATELY ask for their Name, Email, and Phone Number as soon as they show any interest.
+3. Once you have their details AND they specify a time they'd like to talk, use the 'book_appointment' tool to actually book the slot for them.
+4. Do not just send a link. Tell them: "I can book that for you right now. What's your name, email, and phone number, and when would you like to speak?"
+5. After calling 'book_appointment', confirm to the user that their slot has been reserved and our founder will reach out.
+6. Emphasize that every missed call is lost revenue.
+7. Keep responses short, punchy, and focused on THE CALL.
+
+Focus on:
+- AI Receptionist (Voice & Chat) - 24/7 coverage.
+- Website Refresh + AI Integration - High conversion.
+- ROI: Saving time and capturing missed revenue.`,
+          tools: [{ functionDeclarations: [bookAppointmentDeclaration] }]
+        }
       });
 
-      setMessages(prev => [...prev, { role: 'model', text: response.text || 'Sorry, I encountered an error.' }]);
+      const functionCalls = response.functionCalls;
+      if (functionCalls && functionCalls.length > 0) {
+        for (const call of functionCalls) {
+          if (call.name === 'book_appointment') {
+            const args = call.args as any;
+            // Send to FormSubmit to notify owner
+            try {
+              await fetch("https://formsubmit.co/ajax/theavdecoded@gmail.com", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  ...args,
+                  _subject: `New Appointment Booked via Chat: ${args.name}`
+                })
+              });
+            } catch (e) {
+              console.error("Booking notification failed", e);
+            }
+
+            setMessages(prev => [...prev, { 
+              role: 'model', 
+              text: `✅ **Booking Confirmed!**\n\nI've reserved a slot for you on **${args.requested_slot}**. \n\n**Details:**\n- Name: ${args.name}\n- Email: ${args.email}\n- Phone: ${args.phone}\n\nOur founder will reach out to you shortly to confirm the final details. Is there anything else I can help you with?` 
+            }]);
+          }
+        }
+      } else {
+        setMessages(prev => [...prev, { role: 'model', text: response.text || 'Sorry, I encountered an error.' }]);
+      }
     } catch (error) {
       console.error(error);
       setMessages(prev => [...prev, { role: 'model', text: 'Sorry, I am having trouble connecting right now.' }]);

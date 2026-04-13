@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { PhoneOff, MailWarning, Users, Bot, MessageSquareDashed, Layout, Filter, Share2, Workflow, CheckCircle2, Menu, Check, X } from 'lucide-react';
 import Chatbot from './components/Chatbot';
-import LiveDemos from './components/LiveDemos';
 import ParticleBackground from './components/ParticleBackground';
 
 export default function App() {
@@ -13,17 +12,158 @@ export default function App() {
       <Hero />
       <SocialProof />
       <Problem />
+      <RevenueCalculator />
       <Services />
       <WhoIsThisFor />
       <Process />
       <About />
       <Pricing />
-      <LiveDemos />
       <Contact />
       <FAQ />
       <Footer />
       <Chatbot />
     </div>
+  );
+}
+
+function RevenueCalculator() {
+  const [missedCalls, setMissedCalls] = useState(5);
+  const [customerValue, setCustomerValue] = useState(100);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const dailyLoss = missedCalls * customerValue;
+  const weeklyLoss = dailyLoss * 5;
+  const monthlyLoss = dailyLoss * 22;
+  const yearlyLoss = dailyLoss * 260;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name && email) {
+      setIsSubmitted(true);
+      
+      // Sending data to theavdecoded@gmail.com using FormSubmit
+      try {
+        await fetch("https://formsubmit.co/ajax/theavdecoded@gmail.com", {
+          method: "POST",
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            missedCalls,
+            customerValue,
+            weeklyLoss,
+            monthlyLoss,
+            yearlyLoss,
+            _subject: `New Lead from Revenue Calculator: ${name}`
+          })
+        });
+      } catch (error) {
+        console.error('Error sending lead:', error);
+      }
+      
+      console.log('Lead captured:', { name, email, missedCalls, customerValue });
+    }
+  };
+
+  return (
+    <section className="py-24 md:py-32 bg-[#080810] relative z-10 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl md:text-6xl font-serif tracking-tight text-white mb-6">How much is silence costing you?</h2>
+          <p className="text-2xl font-light text-gray-400 max-w-3xl mx-auto">Every missed call is a missed opportunity. Use our calculator to see the potential revenue you're leaving on the table.</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+          {/* Calculator Inputs */}
+          <div className="bg-[#0F0F1A] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl">
+            <div className="space-y-8">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 uppercase tracking-widest mb-4">Missed Calls Per Day</label>
+                <input 
+                  type="range" min="1" max="50" value={missedCalls} 
+                  onChange={(e) => setMissedCalls(parseInt(e.target.value))}
+                  className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#2563EB]"
+                />
+                <div className="flex justify-between mt-4">
+                  <span className="text-3xl font-serif text-white">{missedCalls}</span>
+                  <span className="text-gray-500">calls / day</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-400 uppercase tracking-widest mb-4">Average Customer Value (£)</label>
+                <input 
+                  type="number" value={customerValue} 
+                  onChange={(e) => setCustomerValue(parseInt(e.target.value) || 0)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-2xl text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+                />
+              </div>
+
+              {!isSubmitted ? (
+                <form onSubmit={handleSubmit} className="pt-8 border-t border-white/5 space-y-4">
+                  <p className="text-gray-400 text-sm mb-4">Get your full report and a custom automation strategy:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input 
+                      type="text" placeholder="Your Name" required value={name} onChange={(e) => setName(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#2563EB]/50"
+                    />
+                    <input 
+                      type="email" placeholder="Your Email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#2563EB]/50"
+                    />
+                  </div>
+                  <button type="submit" className="w-full h-14 bg-[#2563EB] text-white rounded-xl font-medium hover:bg-[#3B82F6] transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+                    Send Me My Strategy
+                  </button>
+                </form>
+              ) : (
+                <div className="pt-8 border-t border-white/5 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/20 text-green-500 mb-4">
+                    <Check className="w-6 h-6" />
+                  </div>
+                  <p className="text-white font-medium">Thanks, {name}! We'll be in touch shortly.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Results Display */}
+          <div className="grid grid-cols-1 gap-6">
+            <div className="bg-gradient-to-br from-[#2563EB]/20 to-transparent border border-[#2563EB]/30 rounded-3xl p-8 relative overflow-hidden group">
+              <div className="relative z-10">
+                <p className="text-gray-400 uppercase tracking-widest text-xs mb-2">Potential Weekly Loss</p>
+                <h3 className="text-5xl md:text-6xl font-serif text-white">£{weeklyLoss.toLocaleString()}</h3>
+              </div>
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Workflow className="w-24 h-24 text-white" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-[#0F0F1A] border border-white/5 rounded-3xl p-8">
+                <p className="text-gray-400 uppercase tracking-widest text-xs mb-2">Monthly Loss</p>
+                <h3 className="text-3xl font-serif text-white">£{monthlyLoss.toLocaleString()}</h3>
+              </div>
+              <div className="bg-[#0F0F1A] border border-white/5 rounded-3xl p-8">
+                <p className="text-gray-400 uppercase tracking-widest text-xs mb-2">Yearly Loss</p>
+                <h3 className="text-3xl font-serif text-[#60A5FA]">£{yearlyLoss.toLocaleString()}</h3>
+              </div>
+            </div>
+
+            <div className="bg-white/5 border border-white/5 rounded-3xl p-8">
+              <p className="text-gray-400 text-lg font-light leading-relaxed">
+                "Our AI Receptionist costs a fraction of this loss. Most of our clients see a full ROI within the first 30 days of going live."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -38,7 +178,6 @@ function Navbar() {
           <a href="#services" className="text-xl text-gray-400 hover:text-white transition-colors">Services</a>
           <a href="#process" className="text-xl text-gray-400 hover:text-white transition-colors">How It Works</a>
           <a href="#pricing" className="text-xl text-gray-400 hover:text-white transition-colors">Pricing</a>
-          <a href="#demos" className="text-xl text-gray-400 hover:text-white transition-colors">AI Demos</a>
           <a href="#about" className="text-xl text-gray-400 hover:text-white transition-colors">About</a>
         </div>
         <a href="#contact" className="hidden md:inline-flex h-12 items-center justify-center rounded-lg bg-[#2563EB] px-8 text-lg font-normal text-white transition-all hover:bg-[#2563EB]/90 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] tracking-tight">
@@ -68,7 +207,6 @@ function Navbar() {
                 { href: '#services', label: 'Services' },
                 { href: '#process', label: 'How It Works' },
                 { href: '#pricing', label: 'Pricing' },
-                { href: '#demos', label: 'AI Demos' },
                 { href: '#about', label: 'About' },
               ].map((link) => (
                 <a
@@ -103,17 +241,17 @@ function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
           className="mb-8 inline-block rounded-full border border-[#3B82F6]/50 px-5 py-2 backdrop-blur-md bg-[#3B82F6]/10 shadow-[0_0_15px_rgba(59,130,246,0.2)] text-sm font-medium uppercase tracking-widest text-[#60A5FA]"
         >
-          AI Automation Agency UK | Custom Business Automation Services
+          AI Receptionist Agency UK | Custom AI Voice & Chat Solutions
         </motion.h1>
         <div className="font-syne text-6xl md:text-8xl font-medium tracking-tight leading-none mb-4 flex flex-col items-center">
-          <motion.span initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="text-white block">Your Business.</motion.span>
-          <motion.span initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.7 }} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] block" style={{ textShadow: '0 0 45px rgba(59,130,246,0.4)' }}>Automated.</motion.span>
+          <motion.span initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="text-white block">Never Miss A Call.</motion.span>
+          <motion.span initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.7 }} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] block" style={{ textShadow: '0 0 45px rgba(59,130,246,0.4)' }}>Ever Again.</motion.span>
         </div>
         <motion.p 
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.9 }}
           className="font-dmsans text-2xl font-light text-[#94A3B8] max-w-[900px] mx-auto mt-6 mb-12 leading-relaxed"
         >
-          AV Decoded builds custom AI systems that answer your calls, reply to your messages, and follow up with your customers — 24 hours a day, 7 days a week. No extra staff. No missed opportunities.
+          AV Decoded builds custom AI Receptionists that answer your calls, qualify leads, and book appointments directly into your calendar — 24/7. We also offer high-converting website refreshes with integrated AI chat.
         </motion.p>
         <motion.div 
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.1 }}
@@ -203,20 +341,18 @@ function Problem() {
 
 function Services() {
   const services = [
-    { icon: Bot, title: "AI Receptionist", desc: "Our AI receptionist answers calls, responds to emails, and replies to text messages 24/7 — in your name, with your tone. Your customers get an instant response. You never miss a lead again. Fully customised to your business and your services." },
-    { icon: MessageSquareDashed, title: "Automated Follow-Ups", desc: "Our automated follow-up system keeps in touch with your customers at exactly the right time — after an appointment, a week later, or when they haven't been back in a while. It runs in the background so you stay front of mind without lifting a finger." },
-    { icon: Layout, title: "Website Design", desc: "Your website is often the first and only chance to make a lasting impression on a new lead. We design clean, high-converting interfaces that reflect the true quality of your work and build instant trust with your visitors." },
-    { icon: Filter, title: "Lead Capture & Qualification", desc: "Never lose a warm lead again. Our AI captures every enquiry — from your website, phone, or email — qualifies them automatically, and only sends you the ones worth your time. You focus on closing. We handle the filtering." },
-    { icon: Share2, title: "Content & Social Automation", desc: "Staying visible shouldn't feel like a second full-time job. We automate your content distribution — turning customer interactions into social posts, replies, and updates — so your brand stays top-of-mind across all platforms without you ever having to hit 'post'." },
-    { icon: Workflow, title: "Workflow Automation", desc: "We identify the repetitive tasks eating your team's time and automate them — data entry, scheduling, reminders, reporting, and more. Built around the tools you already use, so there's no steep learning curve and no disruption to your day." }
+    { icon: Bot, title: "AI Receptionist (Voice & Chat)", desc: "Our AI receptionist answers calls, responds to emails, and replies to text messages 24/7 — in your name, with your tone. It qualifies leads and books appointments directly into your calendar while you work." },
+    { icon: Layout, title: "Website Refresh + AI Integration", desc: "We don't just build websites; we build conversion machines. We'll refresh your site with a modern, high-trust design and integrate a custom AI chatbot that captures leads while you sleep." },
+    { icon: MessageSquareDashed, title: "Automated Lead Follow-Up", desc: "Never let a lead go cold. Our systems automatically follow up with every enquiry via SMS or email, ensuring you're always the first to respond to a potential customer." },
+    { icon: Filter, title: "Lead Qualification", desc: "Our AI filters out the tyre-kickers and only puts the high-value leads on your calendar. You spend your time closing deals, not answering basic questions." }
   ];
 
   return (
     <section id="services" className="py-24 md:py-32 bg-[#0A0A12] relative z-10 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="max-w-3xl mb-16">
-          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-4xl md:text-5xl font-serif tracking-tight text-white mb-6">AI automation built around your business — not ours</motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-xl text-gray-400 font-light">Custom systems designed to operate quietly in the background, ensuring your business never drops the ball.</motion.p>
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mb-16 mx-auto">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-4xl md:text-5xl font-serif tracking-tight text-white mb-6">Specialised AI Solutions for Your Front Office</motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-xl text-gray-400 font-light">We focus on the two most important parts of your business: capturing leads and converting them into customers.</motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -246,17 +382,17 @@ function WhoIsThisFor() {
   const audiences = [
     {
       title: "Service-Based Businesses",
-      desc: "Plumbers, electricians, cleaners, and local services who are constantly on the job and missing calls from new leads.",
+      desc: "Missing calls means missing money. We build AI receptionists that answer every call, qualify leads, and book appointments directly into your calendar — while you're on the job.",
       icon: "🔧"
     },
     {
       title: "Agencies & Consultancies",
-      desc: "Marketing, design, and consulting firms that need to automate client onboarding, reporting, and follow-ups to scale without adding headcount.",
+      desc: "Scale your output, not your overhead. We automate client onboarding, reporting, and repetitive follow-ups so your team can focus on high-value strategy, not admin.",
       icon: "📈"
     },
     {
       title: "E-commerce & Retail",
-      desc: "Online stores dealing with high volumes of repetitive customer service queries, order tracking, and return requests.",
+      desc: "Deliver 24/7 support without the 24/7 payroll. Our AI systems handle order tracking, returns, and common FAQs instantly, keeping your customers happy and your inbox empty.",
       icon: "🛍️"
     }
   ];
@@ -289,30 +425,30 @@ function WhoIsThisFor() {
 function Process() {
   return (
     <section id="process" className="py-24 md:py-32 relative z-10 border-t border-white/5 bg-[#040408]/90 backdrop-blur-2xl">
-      <div className="max-w-7xl mr-auto ml-auto pr-6 pl-6">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-24">
-          <h2 className="text-6xl md:text-7xl font-serif tracking-tight text-white mb-6">Three Steps From First Call to Fully Automated</h2>
-          <p className="text-3xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed tracking-tight">No lengthy proposals, no complicated onboarding. Just a clear process that gets your business automated fast.</p>
+          <h2 className="text-6xl md:text-7xl font-serif tracking-tight text-white mb-6">Three Steps to 24/7 AI Reception</h2>
+          <p className="text-3xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed tracking-tight">We don't just give you a tool; we build a custom system that integrates directly into your business workflow.</p>
         </div>
         <div className="relative flex flex-col md:flex-row justify-between gap-16 md:gap-8">
           <div className="hidden md:block absolute top-14 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-[#3B82F6]/50 to-transparent"></div>
           
           <div className="relative flex-1 flex flex-col items-center text-center group">
             <div className="w-28 h-28 rounded-full bg-[#0F0F1A] border border-white/10 flex items-center justify-center mb-8 relative z-10 text-6xl font-serif text-white/20 group-hover:border-[#3B82F6]/50 group-hover:text-white transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]">01</div>
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">We Listen</h3>
-            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">A free 20-minute discovery call where we find out exactly what's slipping through the cracks in your business — and identify where automation can make the biggest difference.</p>
+            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">Discovery</h3>
+            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">We map out your current call flow and identify exactly where you're losing leads. We then design the AI's personality and knowledge base to match your brand perfectly.</p>
           </div>
           
           <div className="relative flex-1 flex flex-col items-center text-center group">
             <div className="w-28 h-28 rounded-full bg-[#0F0F1A] border border-[#3B82F6] shadow-[0_0_40px_rgba(59,130,246,0.3)] flex items-center justify-center mb-8 relative z-10 text-6xl font-serif text-[#60A5FA]">02</div>
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">We Build</h3>
-            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">We design and build your custom AI automation system from the ground up. No off-the-shelf tools. No templates. Every solution is built specifically around your workflow and the way you work.</p>
+            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">Custom Build</h3>
+            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">We build your AI Receptionist from scratch. This includes voice synthesis, CRM integration, and calendar syncing. We test it thoroughly to ensure it handles every scenario flawlessly.</p>
           </div>
           
           <div className="relative flex-1 flex flex-col items-center text-center group">
             <div className="w-28 h-28 rounded-full bg-[#0F0F1A] border border-white/10 flex items-center justify-center mb-8 relative z-10 text-6xl font-serif text-white/20 group-hover:border-[#3B82F6]/50 group-hover:text-white transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]">03</div>
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">You Scale</h3>
-            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">Your systems go live and start working immediately — answering calls, sending follow-ups, capturing leads — 24 hours a day, every day. You get your time back and your business grows.</p>
+            <h3 className="text-4xl font-serif tracking-tight text-white mb-4">Go Live</h3>
+            <p className="text-2xl text-gray-400 font-light max-w-md leading-relaxed">Your AI goes live. It starts answering calls, qualifying leads, and booking appointments instantly. You get a dashboard to monitor every interaction and watch your revenue grow.</p>
           </div>
         </div>
       </div>
@@ -327,7 +463,7 @@ function About() {
         <div className="flex-1">
           <h2 className="text-6xl md:text-7xl font-serif tracking-tight text-white mb-10 leading-tight">Built by Someone Who Actually Understands AI</h2>
           <p className="text-2xl text-gray-400 font-light leading-relaxed mb-8">
-            AV Decoded was founded by an MSc graduate in Artificial Intelligence, Robotics & Autonomous Systems, with a BEng in Mechatronics Engineering. The name started with a passion for autonomous vehicles — intelligent systems that perceive the world, make decisions, and take action without human input. That same engineering logic now powers the automation systems we build for businesses.
+            AV Decoded was founded by an MSc graduate in Artificial Intelligence, Robotics & Autonomous Systems, with a BEng in Mechatronics Engineering. The name started with a passion for intelligent systems that perceive the world, make decisions, and take action without human input. That same engineering logic now powers the automation systems we build for businesses.
           </p>
           <p className="text-2xl text-gray-400 font-light leading-relaxed mb-8">
             Unlike agencies that resell generic software tools, we build every solution from scratch — custom-designed to fit how your business actually operates. We have hands-on experience building automation systems in high-stakes environments, including large-scale infrastructure, computer vision, and intelligent process automation.
@@ -415,116 +551,72 @@ function Pricing() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "center center"]
+    offset: ["start end", "end start"]
   });
 
-  const leftOrbX = useTransform(scrollYProgress, [0, 1], ["-150%", "0%"]);
-  const rightOrbX = useTransform(scrollYProgress, [0, 1], ["150%", "0%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [0, 1, 1]);
-  const scale = useTransform(scrollYProgress, [0, 1], [0.5, 1]);
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 360]);
 
   return (
     <section id="pricing" className="py-32 relative z-10 bg-[#040408]" ref={containerRef}>
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* Abstract Connection Animation */}
-        <div className="relative h-40 md:h-64 w-full max-w-3xl mx-auto mb-16 overflow-hidden flex justify-center items-center">
-          
-          <motion.div 
-            style={{ x: leftOrbX, opacity, scale }}
-            className="absolute left-1/2 -translate-x-[60%] flex items-center justify-center w-32 h-32 md:w-48 md:h-48"
-          >
-            <div className="absolute inset-0 bg-[#3B82F6] rounded-full blur-[60px] opacity-40 animate-pulse"></div>
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-[#60A5FA] to-[#2563EB] rounded-full shadow-[0_0_40px_rgba(59,130,246,0.8)] relative z-10 flex items-center justify-center">
-              <div className="w-8 h-8 md:w-12 md:h-12 border-2 border-white/50 rounded-full animate-[spin_4s_linear_infinite]"></div>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            style={{ opacity, scale }}
-            className="absolute z-0 flex items-center justify-center w-full h-full"
-          >
-            <div className="w-32 md:w-48 h-1 bg-gradient-to-r from-transparent via-[#60A5FA] to-transparent opacity-50 shadow-[0_0_15px_rgba(96,165,250,0.8)]"></div>
-          </motion.div>
-
-          <motion.div 
-            style={{ x: rightOrbX, opacity, scale }}
-            className="absolute right-1/2 translate-x-[60%] flex items-center justify-center w-32 h-32 md:w-48 md:h-48"
-          >
-            <div className="absolute inset-0 bg-[#8B5CF6] rounded-full blur-[60px] opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] rounded-full shadow-[0_0_40px_rgba(139,92,246,0.8)] relative z-10 flex items-center justify-center">
-              <div className="w-8 h-8 md:w-12 md:h-12 border-2 border-white/50 rounded-full animate-[spin_4s_linear_infinite_reverse]"></div>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            style={{ opacity }}
-            className="absolute z-20 flex items-center justify-center"
-          >
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#0F0F1A] border border-[#60A5FA]/50 rounded-xl rotate-45 flex items-center justify-center shadow-[0_0_30px_rgba(96,165,250,0.4)]">
-              <Workflow className="w-6 h-6 md:w-8 md:h-8 text-[#60A5FA] -rotate-45" />
-            </div>
-          </motion.div>
-        </div>
-
+      {/* Stunning Background Animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div 
+          style={{ y: y1, rotate }}
+          className="absolute top-1/4 -left-20 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px]"
+        />
+        <motion.div 
+          style={{ y: y2, rotate: -rotate }}
+          className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px]"
+        />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-24">
-          <h2 className="text-6xl md:text-7xl font-serif tracking-tight text-white mb-6">Simple, Transparent Packages.</h2>
-          <p className="text-3xl font-light text-gray-400 max-w-4xl mx-auto leading-relaxed tracking-tight">No hidden fees. No bloated retainers. Every package is quoted based on your specific needs — book a free call and we'll give you a clear number within 24 hours.</p>
+          <h2 className="text-6xl md:text-7xl font-serif tracking-tight text-white mb-6">Simple, Transparent Pricing.</h2>
+          <p className="text-3xl font-light text-gray-400 max-w-4xl mx-auto leading-relaxed tracking-tight">No hidden fees. No bloated retainers. Choose the package that fits your current needs.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-6xl mx-auto mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto mb-20">
           <div className="bg-[#0F0F1A] border border-white/5 rounded-3xl p-10 flex flex-col hover:border-white/10 transition-colors">
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-3">Starter</h3>
-            <p className="text-xl text-gray-400 font-light mb-10 pb-10 border-b border-white/5 leading-relaxed">One powerful system to plug the biggest gap in your business.</p>
+            <h3 className="text-4xl font-serif tracking-tight text-white mb-3">AI Receptionist Starter</h3>
+            <p className="text-xl text-gray-400 font-light mb-10 pb-10 border-b border-white/5 leading-relaxed">Perfect for businesses that need to capture every call and book appointments automatically.</p>
             <p className="text-3xl font-normal tracking-tight text-[#60A5FA] mb-10">Price on request</p>
             <ul className="space-y-6 mb-10 flex-1 text-xl text-gray-300 font-light">
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />1 custom AI automation system</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />AI Receptionist or Follow-Ups</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Setup & configuration included</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Integration with your existing tools</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />2 weeks post-launch support</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />24/7 AI Voice Receptionist</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Automated Calendar Booking</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />SMS & Email Lead Capture</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Custom Tone of Voice</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />CRM Integration</li>
             </ul>
             <a href="#contact" className="w-full h-16 inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 text-xl font-normal text-white transition-all hover:bg-white/10 tracking-tight">Get Started</a>
           </div>
 
-          <div className="bg-[#0F0F1A] border border-[#3B82F6]/50 rounded-3xl p-10 flex flex-col relative md:-translate-y-6 shadow-[0_0_50px_rgba(59,130,246,0.15)]">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white text-sm font-normal px-6 py-2.5 rounded-full uppercase tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.4)]">Most Popular</div>
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-3 mt-2">Growth</h3>
-            <p className="text-xl text-gray-400 font-light mb-10 pb-10 border-b border-white/5 leading-relaxed">Full AI back office that handles your communications end to end.</p>
+          <div className="bg-[#0F0F1A] border border-[#3B82F6]/50 rounded-3xl p-10 flex flex-col relative shadow-[0_0_50px_rgba(59,130,246,0.15)]">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white text-sm font-normal px-6 py-2.5 rounded-full uppercase tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.4)]">Full Digital Presence</div>
+            <h3 className="text-4xl font-serif tracking-tight text-white mb-3 mt-2">AI + Web Refresh</h3>
+            <p className="text-xl text-gray-400 font-light mb-10 pb-10 border-b border-white/5 leading-relaxed">For businesses ready to dominate their market with a high-converting site and full AI automation.</p>
             <p className="text-3xl font-normal tracking-tight text-[#60A5FA] mb-10">Price on request</p>
             <ul className="space-y-6 mb-10 flex-1 text-xl text-gray-300 font-light">
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Up to 4 custom AI automation systems</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Omnichannel — calls, email, SMS</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Automated follow-up sequences</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />CRM & calendar integrations</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Website chatbot integration</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Everything in AI Receptionist</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Modern Website Refresh</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Integrated AI Chatbot</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Conversion Rate Optimisation</li>
+              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#60A5FA] shrink-0 mt-1" />Ongoing Performance Monitoring</li>
             </ul>
             <a href="#contact" className="w-full h-16 inline-flex items-center justify-center rounded-xl bg-[#2563EB] px-8 text-xl font-normal text-white transition-all hover:bg-[#3B82F6] hover:shadow-[0_0_30px_rgba(37,99,235,0.4)] tracking-tight">Book a Call</a>
           </div>
-
-          <div className="bg-[#0F0F1A] border border-white/5 rounded-3xl p-10 flex flex-col hover:border-white/10 transition-colors">
-            <h3 className="text-4xl font-serif tracking-tight text-white mb-3">Custom</h3>
-            <p className="text-xl text-gray-400 font-light mb-10 pb-10 border-b border-white/5 leading-relaxed">Built from scratch around your business, your team, and your goals.</p>
-            <p className="text-3xl font-normal tracking-tight text-[#60A5FA] mb-10">Price on request</p>
-            <ul className="space-y-6 mb-10 flex-1 text-xl text-gray-300 font-light">
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Everything in Growth</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Full bespoke system architecture</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Computer vision & advanced AI</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Dedicated account manager</li>
-              <li className="flex items-start gap-4"><Check strokeWidth={2} className="w-6 h-6 text-[#3B82F6] shrink-0 mt-1" />Ongoing maintenance & monitoring</li>
-            </ul>
-            <a href="#contact" className="w-full h-16 inline-flex items-center justify-center rounded-xl border border-white/10 bg-transparent px-8 text-xl font-normal text-white transition-all hover:bg-white/5 tracking-tight">Discuss Scope</a>
-          </div>
         </div>
-
-        <div className="max-w-5xl mx-auto text-center bg-[#0F0F1A]/80 border border-[#3B82F6]/20 rounded-3xl p-12 backdrop-blur-sm">
-          <div className="text-5xl mb-6">🤝</div>
-          <h3 className="text-4xl font-serif text-white tracking-tight mb-6">We don't disappear after launch</h3>
-          <p className="text-2xl text-gray-400 font-light leading-relaxed max-w-3xl mx-auto">Every package includes post-launch support. We monitor, tweak, and make sure your system is working exactly as it should — because your results are our reputation.</p>
+        
+        <div className="max-w-3xl mx-auto text-center mt-16">
+          <p className="text-2xl text-gray-400 font-light italic leading-relaxed">
+            "Need something more custom? We build bespoke AI solutions for enterprise clients. Book a call to discuss your specific requirements."
+          </p>
         </div>
       </div>
     </section>
-  );
+);
 }
 function Contact() {
   useEffect(() => {
