@@ -676,11 +676,11 @@ function Contact() {
 
 function FAQ() {
   const faqs = [
-    { q: "How long does it take to build?", a: "Most Starter systems go live within 1–2 weeks. Growth packages typically take 3–4 weeks depending on complexity. Custom builds are scoped individually on our discovery call." },
-    { q: "Do I need to be technical to use this?", a: "Not at all. We handle the entire build and setup. From your end it just feels like having an extra team member — you won't need to touch any code or technical settings." },
-    { q: "What tools do you integrate with?", a: "We work with the tools you already use — including Google Workspace, Outlook, CRMs like HubSpot or Zoho, Calendly, WhatsApp Business, Twilio, and more. We'll confirm compatibility on your discovery call." },
-    { q: "How much does it cost?", a: "Every business is different so we price based on what you actually need — not a one-size-fits-all number. Book a free call and we'll give you a clear quote with no surprises." },
-    { q: "What happens after my system goes live?", a: "We don't just hand it over and disappear. Every package includes post-launch support so we can tweak, adjust, and make sure everything is running exactly as it should." }
+    { q: "Will the AI Receptionist sound robotic?", a: "Not at all. We use state-of-the-art voice synthesis that sounds natural, professional, and warm. Most customers won't even realize they're talking to an AI — they'll just be happy someone picked up the phone immediately." },
+    { q: "Can it really book appointments directly into my calendar?", a: "Yes. We integrate directly with Google Calendar, Outlook, and most major booking softwares. When a customer picks a slot, it appears in your calendar instantly, just like a human assistant would do it." },
+    { q: "What happens if the AI doesn't know the answer?", a: "The AI is trained on your specific business knowledge. If it encounters a complex query it can't handle, it can seamlessly take a detailed message, offer to have you call them back, or even transfer the call to your mobile if you're available." },
+    { q: "How long does it take to get my system live?", a: "We move fast. A standard AI Receptionist setup typically goes live within 7–10 days. This includes the discovery phase, custom voice training, and full integration with your existing tools." },
+    { q: "How do I know if I'll get a return on investment?", a: "If you're currently missing even 2-3 calls a week, the system usually pays for itself within the first month. Our calculator above shows the real cost of silence — our goal is to turn that lost revenue back into profit." }
   ];
 
   return (
