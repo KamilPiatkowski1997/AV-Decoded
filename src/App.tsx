@@ -317,9 +317,9 @@ function Problem() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: PhoneOff, title: "Missed calls you never knew about", desc: "Every unanswered call is a potential customer gone. Most won't leave a voicemail. They'll just call your competitor instead. If you're not available 24/7, you're losing business around the clock." },
-            { icon: MailWarning, title: "Emails sitting unanswered for days", desc: "Customers expect a response within the hour. When enquiries pile up in your inbox while you're doing the actual work, leads go cold fast. By the time you reply, they've already gone." },
-            { icon: Users, title: "Clients you forgot to follow up with", desc: "The fortune is in the follow-up — but nobody has time. Without a system automatically checking in on past customers, you're leaving repeat business and referrals on the table every single week." }
+            { icon: PhoneOff, title: "You're missing calls while you're on the tools", desc: "Every unanswered call is a potential customer calling your competitor instead. If you're busy working, you can't be on the phone — and that's costing you money every single day." },
+            { icon: MailWarning, title: "Leads are going cold while you're busy", desc: "Customers expect a response now, not in three days. When enquiries pile up while you're out in the field, they've usually found someone else by the time you finally sit down to reply." },
+            { icon: Users, title: "Repeat business is slipping through the cracks", desc: "The easiest money is in repeat business, but nobody has the time to manually check in. Without an automated system, you're leaving thousands in referrals and recurring work on the table." }
           ].map((item, i) => (
             <motion.div 
               key={i}
@@ -386,14 +386,14 @@ function WhoIsThisFor() {
       icon: "🔧"
     },
     {
-      title: "Agencies & Consultancies",
-      desc: "Scale your output, not your overhead. We automate client onboarding, reporting, and repetitive follow-ups so your team can focus on high-value strategy, not admin.",
-      icon: "📈"
+      title: "Businesses Missing After-Hours Leads",
+      desc: "Most businesses operate 9-5, but customers call when they're off work. Our AI ensures you're 'open' 24/7, capturing bookings at 8 PM while your competitors are offline.",
+      icon: "🌙"
     },
     {
-      title: "E-commerce & Retail",
-      desc: "Deliver 24/7 support without the 24/7 payroll. Our AI systems handle order tracking, returns, and common FAQs instantly, keeping your customers happy and your inbox empty.",
-      icon: "🛍️"
+      title: "Owners Who Can't Answer Every Call",
+      desc: "The AI acts as your safety net, picking up only if you're busy. It can even transfer high-value prospects straight to your mobile if they're ready to close a deal right now.",
+      icon: "📱"
     }
   ];
 
